@@ -3,6 +3,7 @@ $(function() {
     var $tvShowsContainer = $('#app-body').find('.tv-shows')
 
     function renderShows(shows) {
+        $tvShowsContainer.find('loader').remove();
         shows.forEach(function (show) {
             var article = template
                 .replace(':name:', show.name)
@@ -54,12 +55,19 @@ $(function() {
                         '</div>' +
                     '</article>';
 
-    $.ajax({
-        url: 'http://api.tvmaze.com/shows',
-        success: function (shows, textStatus, xhr) {            
+    if (!localStorage.shows) {
+    $.ajax('http://api.tvmaze.com/shows')
+        .then(function (shows) { 
             $tvShowsContainer.find('.loader').remove();
-             renderShows(shows);
-        }
-    });
+            localStorage.shows = JSON.stringify(shows);
+            renderShows(shows);
+        })
+    } else {
+        renderShows(JSON.parse(localStorage.shows));
+    }
+    
+
+
+//cierra la funcion
 });
 
